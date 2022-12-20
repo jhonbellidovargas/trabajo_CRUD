@@ -9,7 +9,14 @@ let users = [
 ]
 let usersFiltrados = [];
 
-var reverse = false;
+var reverseCreated = false;
+var reverseNombre = false;
+var reverseApellido = false;
+var reverseEdad = false;
+var reverseProfesion = false;
+var reverseId = false;
+var reverseModified = false;
+
 const sectionUsers = document.createElement("section");
 sectionUsers.classList.add("container");
 resultado.append(sectionUsers);
@@ -31,12 +38,27 @@ sectionUsers.append(sectionSuperior);
 const sectionFiltrar = document.createElement("section");
 sectionFiltrar.classList.add("container", "col-12", "col-md-6", "d-flex", "justify-content-start");
 sectionSuperior.append(sectionFiltrar);
-const inputFiltrar = document.createElement("input");
-inputFiltrar.classList.add("form-control", "me-2");
-inputFiltrar.placeholder = "Buscar por nombre";
-sectionFiltrar.append(inputFiltrar);
-inputFiltrar.addEventListener("keyup", () => {
-  usersFiltrados = filtrarPorNombre(users, inputFiltrar.value);
+const inputFiltrarMes = document.createElement("input");
+inputFiltrarMes.classList.add("form-control", "me-2");
+inputFiltrarMes.setAttribute("type", "number");
+inputFiltrarMes.setAttribute("min", "1");
+inputFiltrarMes.setAttribute("max", "12");
+inputFiltrarMes.placeholder = "Mes";
+sectionFiltrar.append(inputFiltrarMes);
+const inputFiltrarAnio = document.createElement("input");
+inputFiltrarAnio.classList.add("form-control", "me-2");
+inputFiltrarAnio.setAttribute("type", "number");
+inputFiltrarAnio.placeholder = "Año";
+sectionFiltrar.append(inputFiltrarAnio);
+
+const btnFiltrar = document.createElement("button");
+btnFiltrar.classList.add("btn", "btn-primary");
+btnFiltrar.textContent = "Filtrar";
+sectionFiltrar.append(btnFiltrar);
+btnFiltrar.addEventListener("click", () => {
+  const mes = inputFiltrarMes.value;
+  const anio = inputFiltrarAnio.value;
+  usersFiltrados = filtrarPorFecha(users, mes, anio);
   construirTabla();
 });
 
@@ -110,14 +132,62 @@ function construirEncabezadosUsers() {
     const th = document.createElement("th");
     th.textContent = key.toUpperCase();
     th.style.cursor = "pointer";
-    if (key == "created_at") {
-      th.textContent = `${key.toUpperCase()} ${reverse ? "↓" : "↑"}`;
+    if (key == "id") {
+      th.textContent = `${key.toUpperCase()} ${reverseId ? "↑" : "↓"}`;
       th.addEventListener("click", () => {
-        ordenarPorFecha(users, reverse);
+        reverseId = !reverseId;
+        ordenarPorAtributo(key, reverseId);
         construirTabla();
-        reverse = !reverse;
       });
-    } 
+    }
+    if (key == "nombre") {
+      th.textContent = `${key.toUpperCase()} ${reverseNombre ? "↑" : "↓"}`;
+      th.addEventListener("click", () => {
+        reverseNombre = !reverseNombre;
+        ordenarPorAtributo(key, reverseNombre);
+        construirTabla();
+      });
+    }
+    if (key == "apellido") {
+      th.textContent = `${key.toUpperCase()} ${reverseApellido ? "↑" : "↓"}`;
+      th.addEventListener("click", () => {
+        reverseApellido = !reverseApellido;
+        ordenarPorAtributo(key, reverseApellido);
+        construirTabla();
+      });
+    }
+    if (key == "edad") {
+      th.textContent = `${key.toUpperCase()} ${reverseEdad ? "↑" : "↓"}`;
+      th.addEventListener("click", () => {
+        reverseEdad = !reverseEdad;
+        ordenarPorAtributo(key, reverseEdad);
+        construirTabla();
+      });
+    }
+    if (key == "profesion") {
+      th.textContent = `${key.toUpperCase()} ${reverseProfesion ? "↑" : "↓"}`;
+      th.addEventListener("click", () => {
+        reverseProfesion = !reverseProfesion;
+        ordenarPorAtributo(key, reverseProfesion);
+        construirTabla();
+      });
+    }
+    if (key == "created_at") {
+      th.textContent = `${key.toUpperCase()} ${reverseCreated ? "↓" : "↑"}`;
+      th.addEventListener("click", () => {
+        reverseCreated = !reverseCreated;
+        ordenarPorFecha(users, reverseCreated, key);
+        construirTabla();
+      });
+    }
+    if (key == "modified_at") {
+      th.textContent = `${key.toUpperCase()} ${reverseModified ? "↓" : "↑"}`;
+      th.addEventListener("click", () => {
+        reverseModified = !reverseModified;
+        ordenarPorFecha(users, reverseModified, key);
+        construirTabla();
+      });
+    }
     tr2.append(th);
   }
   encabezados2.append(tr2);
@@ -176,10 +246,22 @@ function verificarDatos(objeto) {
 };
 
 function ingresarUsuario () {
-  let nombre = prompt('Nombre: ')
-  let apellido = prompt('Apellido: ')
+  let nombre = prompt('Nombre: ');
+  if (nombre === null) {
+    return;
+  }
+  let apellido = prompt('Apellido: ');
+  if (apellido === null) {
+    return;
+  }
   let edad = prompt('Edad: ')
+  if (edad === null) {
+    return;
+  }
   let profesion = prompt('Profesión: ')
+  if (profesion === null) {
+    return;
+  }
   let fecha = new Date()
   let usuario = {
     id: users.length + 1,
@@ -193,36 +275,36 @@ function ingresarUsuario () {
   users.push(usuario);
 };
 
-function ordenarPorFecha (arreglo, reverse) {
+function ordenarPorFecha (arreglo, reverse, atributo) {
   if (reverse) {
     arreglo.sort((a, b) => {
-      return new Date(a.created_at) - new Date(b.created_at);
+      return new Date(a[atributo]) - new Date(b[atributo]);
     });
   } else {
     arreglo.sort((a, b) => {
-      return new Date(b.created_at) - new Date(a.created_at);
+      return new Date(b[atributo]) - new Date(a[atributo]);
     });
   }
 };
 
 function ordenarPorAtributo(atributo,reverse) {
-  if (typeof pokemons[0][atributo] === "string") {
+  if (typeof users[0][atributo] === "string") {
     if (reverse === true) {
-      return pokemons.sort((a, b) => {
+      return users.sort((a, b) => {
         return a[atributo].localeCompare(b[atributo]);
       });
     } else {
-      return pokemons.sort((a, b) => {
+      return users.sort((a, b) => {
         return b[atributo].localeCompare(a[atributo]);
       });
     }
-  } else if (typeof pokemons[0][atributo] === "number") {
+  } else if (typeof users[0][atributo] === "number") {
     if (reverse===true){
-      return pokemons.sort((a, b) => {
+      return users.sort((a, b) => {
         return b[atributo] - a[atributo];
       });
     } else {  
-      return pokemons.sort((a, b) => {
+      return users.sort((a, b) => {
         return a[atributo] - b[atributo];
       });
     }
@@ -231,38 +313,10 @@ function ordenarPorAtributo(atributo,reverse) {
   }
 };
 
-// filtro
-// const sectionFiltro = document.createElement("section");
-// sectionUsers.append(sectionFiltro);
-// const inputMes = document.createElement("input");
-// inputMes.setAttribute("type", "number");
-// inputMes.setAttribute("placeholder", "Mes");
-// inputMes.setAttribute("min", "1");
-// inputMes.setAttribute("max", "12");
-// sectionFiltro.append(inputMes);
-// const inputAnio = document.createElement("input");
-// inputAnio.setAttribute("type", "number");
-// inputAnio.setAttribute("placeholder", "Año");
-// inputAnio.setAttribute("min", "2021");
-// inputAnio.setAttribute("max", "2022");
-// sectionFiltro.append(inputAnio);
-// const btnFiltrar = document.createElement("button");
-// btnFiltrar.classList.add("btn", "btn-primary");
-// btnFiltrar.textContent = "Filtrar";
-// sectionFiltro.append(btnFiltrar);
-// btnFiltrar.addEventListener("click", () => {
-//   const mes = inputMes.value;
-//   const anio = inputAnio.value;
-//   usersFiltrados = filtrarPorFecha(users, mes, anio);
-//   tablaUsers.innerHTML = "";
-//   construirEncabezadosUsers();
-//   construirCuerpoUsers();
-// });
-
 function modificarUsuarios () {
   let idIngresado = prompt("Ingresa el Id");
-  if (idIngresado === "") {
-    alert("No puede ingresar un dato vacio");
+  if (idIngresado === null) {
+    return;
   } else {
     let user = users.find((user) => user.id == idIngresado);
     if (user) {
@@ -316,6 +370,14 @@ function deleteRecord() {
     }
   }
 }
+
+function filtrarPorFecha (arreglo, mes, anio) {
+  let usuariosFiltrados = arreglo.filter((usuario) => {
+    let fecha = new Date(usuario.created_at);
+    return fecha.getMonth() + 1 == mes && fecha.getFullYear() == anio;
+  });
+  return usuariosFiltrados;
+};
 
 
 
