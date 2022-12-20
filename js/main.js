@@ -9,13 +9,13 @@ let users = [
 ]
 let usersFiltrados = [];
 
-var reverseCreated = false;
-var reverseNombre = false;
-var reverseApellido = false;
-var reverseEdad = false;
-var reverseProfesion = false;
-var reverseId = false;
-var reverseModified = false;
+let reverseCreated = false;
+let reverseNombre = false;
+let reverseApellido = false;
+let reverseEdad = false;
+let reverseProfesion = false;
+let reverseId = false;
+let reverseModified = false;
 
 const sectionUsers = document.createElement("section");
 sectionUsers.classList.add("container");
@@ -240,8 +240,6 @@ function verificarDatos(objeto) {
         objeto[dato] = datoIngresado;
       }
     });
-  } else {
-    alert("Todos los datos estan completos");
   }
 };
 
@@ -257,6 +255,9 @@ function ingresarUsuario () {
   let edad = prompt('Edad: ')
   if (edad === null || edad === "") {
     return;
+  } else if(isNaN(edad)==true){
+    alert('es un no numero');
+    edad = prompt('Por favor, ingrese un número como edad: ')
   }
   let profesion = prompt('Profesión: ')
   if (profesion === null || profesion === "") {
@@ -331,6 +332,9 @@ function modificarUsuarios () {
       let edad = prompt(`Edad: ${user.edad}`);
       if (edad === "") {
         edad = user.edad;
+      } else if (isNaN(edad)==true){
+        alert('es un no numero');
+        edad = prompt(`Edad: ${user.edad}. Por favor, ingrese un número como edad: `)
       }
       let profesion = prompt(`Profesión: ${user.profesion}`);
       if (profesion === "") {
