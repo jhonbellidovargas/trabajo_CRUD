@@ -97,7 +97,7 @@ sectionModificar.classList.add("container", "col-12", "col-md-6", "d-flex", "jus
 sectionInferior.append(sectionModificar);
 const btnModificar = document.createElement("button");
 btnModificar.classList.add("btn","btn-success", "mx-2");
-btnModificar.innerHTML = `Modificar <i class="fas fa-edit"></i>`;
+btnModificar.innerHTML = `Modificar registro <i class="fas fa-edit"></i>`;
 sectionModificar.append(btnModificar);
 btnModificar.addEventListener("click", () => {
   modificarUsuarios();
@@ -109,7 +109,7 @@ sectionEliminar.classList.add("container", "col-12", "col-md-6", "d-flex", "just
 sectionInferior.append(sectionEliminar);
 const btnEliminar = document.createElement("button");
 btnEliminar.classList.add("btn","btn-danger", "mx-2");
-btnEliminar.innerHTML = `Eliminar <i class="fas fa-trash-alt"></i>`;
+btnEliminar.innerHTML = `Eliminar registro <i class="fas fa-trash-alt"></i>`;
 sectionEliminar.append(btnEliminar);
 btnEliminar.addEventListener("click", () => {
   deleteRecord();
@@ -247,19 +247,19 @@ function verificarDatos(objeto) {
 
 function ingresarUsuario () {
   let nombre = prompt('Nombre: ');
-  if (nombre === null) {
+  if (nombre === null || nombre==="") {
     return;
   }
   let apellido = prompt('Apellido: ');
-  if (apellido === null) {
+  if (apellido === null || apellido === "") {
     return;
   }
   let edad = prompt('Edad: ')
-  if (edad === null) {
+  if (edad === null || edad === "") {
     return;
   }
   let profesion = prompt('Profesión: ')
-  if (profesion === null) {
+  if (profesion === null || profesion === "") {
     return;
   }
   let fecha = new Date()
@@ -315,7 +315,7 @@ function ordenarPorAtributo(atributo,reverse) {
 
 function modificarUsuarios () {
   let idIngresado = prompt("Ingresa el Id");
-  if (idIngresado === null) {
+  if (idIngresado === null || idIngresado==="") {
     return;
   } else {
     let user = users.find((user) => user.id == idIngresado);
@@ -348,8 +348,7 @@ function modificarUsuarios () {
 function deleteRecord() {
   // Pide al usuario que ingrese el ID del registro a borrar
   const id = prompt("Ingresa el ID del registro que deseas borrar:");
-  if (id === "") {
-    alert("No puedes ingresar un dato vacío");
+  if (id === "" || id === null) {
     return;
   } else {
     // Busca el registro en la matriz de usuarios
