@@ -48,6 +48,9 @@ sectionFiltrar.append(inputFiltrarMes);
 const inputFiltrarAnio = document.createElement("input");
 inputFiltrarAnio.classList.add("form-control", "me-2");
 inputFiltrarAnio.setAttribute("type", "number");
+inputFiltrarAnio.setAttribute("min", "2020");
+const anioActual = new Date().getFullYear();
+inputFiltrarAnio.setAttribute("max", anioActual);
 inputFiltrarAnio.placeholder = "Año";
 sectionFiltrar.append(inputFiltrarAnio);
 
