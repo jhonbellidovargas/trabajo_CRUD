@@ -11,15 +11,42 @@ let usersFiltrados = [];
 
 var reverse = false;
 const sectionUsers = document.createElement("section");
-sectionUsers.classList.add("container", "mt-2");
+sectionUsers.classList.add("container");
 resultado.append(sectionUsers);
+
+//Header
+const header = document.createElement("header");
+header.classList.add("p-3", "rounded", "row", "d-flex", "justify-content-center");
+sectionUsers.append(header);
+const h1 = document.createElement("h1");
+h1.classList.add("text-center");
+h1.textContent = "CRUD - Usuarios";
+header.append(h1);
+
+//Menu
+const sectionSuperior = document.createElement("section");
+sectionSuperior.classList.add("p-3", "bg-dark", "rounded", "text-white", "row", "d-flex", "justify-content-between", "my-2");
+sectionUsers.append(sectionSuperior);
+//Filtrar
+const sectionFiltrar = document.createElement("section");
+sectionFiltrar.classList.add("container", "col-12", "col-md-6", "d-flex", "justify-content-start");
+sectionSuperior.append(sectionFiltrar);
+const inputFiltrar = document.createElement("input");
+inputFiltrar.classList.add("form-control", "me-2");
+inputFiltrar.placeholder = "Buscar por nombre";
+sectionFiltrar.append(inputFiltrar);
+inputFiltrar.addEventListener("keyup", () => {
+  usersFiltrados = filtrarPorNombre(users, inputFiltrar.value);
+  construirTabla();
+});
 
 //Agregar
 const sectionAgregar = document.createElement("section");
-sectionUsers.append(sectionAgregar);
+sectionAgregar.classList.add("container", "col-12", "col-md-6", "d-flex", "justify-content-end");
+sectionSuperior.append(sectionAgregar);
 const btnAgregar = document.createElement("button");
 btnAgregar.classList.add("btn", "btn-primary");
-btnAgregar.textContent = "Agregar";
+btnAgregar.innerHTML = `Agregar <i class="fas fa-plus"></i>`;
 sectionAgregar.append(btnAgregar);
 btnAgregar.addEventListener("click", () => {
   ingresarUsuario();
@@ -27,10 +54,10 @@ btnAgregar.addEventListener("click", () => {
 });
 //Tabla
 const tablaUsers = document.createElement("table");
-tablaUsers.classList.add("table", "table-striped");
+tablaUsers.classList.add("table", "table-striped", "table-bordered", "table-responsive");
 sectionUsers.append(tablaUsers);
 construirTabla();
-function construirTabla() {
+function construirTabla() { 
   tablaUsers.innerHTML = "";
   const thead = document.createElement("thead");
   tablaUsers.append(thead);
@@ -38,51 +65,65 @@ function construirTabla() {
   construirCuerpoUsers();
 }
 
+//Seccion final
+const sectionInferior = document.createElement("section");
+sectionInferior.classList.add("p-4", "rounded", "text-white", "row", "d-flex", "justify-content-center", "my-4");
+sectionUsers.append(sectionInferior);
 //Modificar
 const sectionModificar = document.createElement("section");
-sectionUsers.append(sectionModificar);
+sectionModificar.classList.add("container", "col-12", "col-md-6", "d-flex", "justify-content-end");
+sectionInferior.append(sectionModificar);
 const btnModificar = document.createElement("button");
-btnModificar.classList.add("btn","btn-success");
-btnModificar.textContent = "Modificar ✍️"
+btnModificar.classList.add("btn","btn-success", "mx-2");
+btnModificar.innerHTML = `Modificar <i class="fas fa-edit"></i>`;
 sectionModificar.append(btnModificar);
 btnModificar.addEventListener("click", () => {
-  //TODO: funcion modificar
+  modificarUsuarios();
   construirTabla();
 });
 //Borrar
 const sectionEliminar = document.createElement("section");
-sectionUsers.append(sectionEliminar);
+sectionEliminar.classList.add("container", "col-12", "col-md-6", "d-flex", "justify-content-start");
+sectionInferior.append(sectionEliminar);
 const btnEliminar = document.createElement("button");
-btnEliminar.classList.add("btn","btn-danger");
-btnEliminar.textContent = "Eliminar 🚮"
-sectionModificar.append(btnEliminar);
+btnEliminar.classList.add("btn","btn-danger", "mx-2");
+btnEliminar.innerHTML = `Eliminar <i class="fas fa-trash-alt"></i>`;
+sectionEliminar.append(btnEliminar);
 btnEliminar.addEventListener("click", () => {
-  //TODO: funcion eliminar
+  deleteRecord();
+  construirTabla();
 });
 
 function construirEncabezadosUsers() {
   const encabezados2 = document.createElement("thead");
-  encabezados2.classList.add("thead-dark");
+  encabezados2.classList.add("bg-dark", "text-white");
   const tr2 = document.createElement("tr");
-  for (const key in users[0]) {
+  //verificamos si alhuno de los objetos tiene la propiedad modified_at
+  let indexofModified = 0;
+  for (const index in users) {
+    if (users[index].hasOwnProperty("modified_at")) {
+      indexofModified = index;
+      break;
+    }
+  }
+  for (const key in users[indexofModified]) {
     const th = document.createElement("th");
-    th.textContent = key;
+    th.textContent = key.toUpperCase();
     th.style.cursor = "pointer";
     if (key == "created_at") {
-      th.textContent = `${key} ${reverse ? "↓" : "↑"}`;
+      th.textContent = `${key.toUpperCase()} ${reverse ? "↓" : "↑"}`;
       th.addEventListener("click", () => {
         ordenarPorFecha(users, reverse);
-        tablaUsers.innerHTML = "";
-        construirEncabezadosUsers();
+        construirTabla();
         reverse = !reverse;
-        construirCuerpoUsers();
       });
-    }
+    } 
     tr2.append(th);
   }
   encabezados2.append(tr2);
   tablaUsers.append(encabezados2);
 }
+
 function construirCuerpoUsers() {
   const cuerpo = document.createElement("tbody");
   if (usersFiltrados.length > 0) {
@@ -110,7 +151,7 @@ function construirCuerpoUsers() {
   }
 }
 
-const verificarDatos = (objeto) => {
+function verificarDatos(objeto) {
   let datosFaltantes = [];
   for (const key in objeto) {
     if (key === "id") {
@@ -134,7 +175,7 @@ const verificarDatos = (objeto) => {
   }
 };
 
-const ingresarUsuario = () => {
+function ingresarUsuario () {
   let nombre = prompt('Nombre: ')
   let apellido = prompt('Apellido: ')
   let edad = prompt('Edad: ')
@@ -148,12 +189,11 @@ const ingresarUsuario = () => {
     profesion: profesion,
     created_at: fecha.toISOString()
   };
-  console.log(usuario);
   verificarDatos(usuario);
   users.push(usuario);
-  console.log(users);
 };
-const ordenarPorFecha = (arreglo, reverse) => {
+
+function ordenarPorFecha (arreglo, reverse) {
   if (reverse) {
     arreglo.sort((a, b) => {
       return new Date(a.created_at) - new Date(b.created_at);
@@ -165,7 +205,7 @@ const ordenarPorFecha = (arreglo, reverse) => {
   }
 };
 
-const ordenarPorAtributo = (atributo,reverse) => {
+function ordenarPorAtributo(atributo,reverse) {
   if (typeof pokemons[0][atributo] === "string") {
     if (reverse === true) {
       return pokemons.sort((a, b) => {
@@ -218,6 +258,64 @@ const ordenarPorAtributo = (atributo,reverse) => {
 //   construirEncabezadosUsers();
 //   construirCuerpoUsers();
 // });
+
+function modificarUsuarios () {
+  let idIngresado = prompt("Ingresa el Id");
+  if (idIngresado === "") {
+    alert("No puede ingresar un dato vacio");
+  } else {
+    let user = users.find((user) => user.id == idIngresado);
+    if (user) {
+      let nombre = prompt(`Nombre: ${user.nombre}`);
+      if (nombre === "") {
+        nombre = user.nombre;
+      };
+      let apellido = prompt(`Apellido: ${user.apellido}`);
+      if (apellido === "") {
+        apellido = user.apellido;
+      }
+      let edad = prompt(`Edad: ${user.edad}`);
+      if (edad === "") {
+        edad = user.edad;
+      }
+      let profesion = prompt(`Profesión: ${user.profesion}`);
+      if (profesion === "") {
+        profesion = user.profesion;
+      }
+      user.nombre = nombre;
+      user.apellido = apellido;
+      user.edad = edad;
+      user.profesion = profesion;
+      user.modified_at = new Date().toISOString();
+    }
+  }
+};
+
+function deleteRecord() {
+  // Pide al usuario que ingrese el ID del registro a borrar
+  const id = prompt("Ingresa el ID del registro que deseas borrar:");
+  if (id === "") {
+    alert("No puedes ingresar un dato vacío");
+    return;
+  } else {
+    // Busca el registro en la matriz de usuarios
+    const user = users.find((user) => user.id == id);
+    // Si el usuario no existe, se muestra un mensaje de error
+    if (!user) {
+      alert("El usuario no existe");
+      return;
+    } else {
+      // Verifica si el usuario está seguro de borrar el registro
+      const confirmDelete = prompt("¿Estás seguro de que deseas borrar este registro? Si/No");
+      // Si el usuario confirma que quiere borrar el registro, se busca el registro en la matriz de usuarios
+      // y se elimina
+      if (confirmDelete === "Si" || confirmDelete === "si") {
+        const index = users.indexOf(user);
+        users.splice(index, 1);
+      }
+    }
+  }
+}
 
 
 
